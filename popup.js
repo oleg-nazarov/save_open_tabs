@@ -17,21 +17,17 @@ function getGroupPropsForSaving(group) {
 async function getDataForSaving(tabs) {
   const allTabData = { tabs: [], groups: {} };
 
-  for (let i = 0; i < tabs.length; ++i) {
+  for (const tab of tabs) {
     // get tabs data
-    const newTab = getTabPropsForSaving(tabs[i]);
+    const newTab = getTabPropsForSaving(tab);
     allTabData.tabs.push(newTab);
     
     // get groups data
-    if (
-      newTab.groupId == -1 ||
-      Object.prototype.hasOwnProperty.call(allTabData.groups, newTab.groupId)
-    ) {
-      continue;
+    if (newTab.groupId !== -1 && !allTabData.groups[newTab.groupId]) {
+      const chromeGroup = await chrome.tabGroups.get(newTab.groupId);
+      allTabData.groups[newTab.groupId] = getGroupPropsForSaving(chromeGroup);
     }
-    const chromeGroup = await chrome.tabGroups.get(newTab.groupId);
-    allTabData.groups[newTab.groupId] = getGroupPropsForSaving(chromeGroup);
-  };
+  }
 
   return allTabData;
 }
