@@ -53,64 +53,78 @@ function openTabs() {
   const reader = new FileReader();
 
   reader.onload = () => {
-    // TODO: handle errors and show it in the popup when not all of data are correct
-    
-    const allTabData = JSON.parse(decodeURIComponent(reader.result));
+    try {
+      const result = reader.result;
 
-    // separate tabs according to their window belongings
-    const windowToTabs = allTabData.tabs.reduce((acc, tab) => {
-      if (!Object.prototype.hasOwnProperty.call(acc, tab.windowId)) {
-        acc[tab.windowId] = [];
+      if (!result) {
+        throw new Error("Empty file content");
       }
-      acc[tab.windowId].push(tab);
 
-      return acc;
-    }, {});
+      const allTabData = JSON.parse(decodeURIComponent(result));
 
-    // 1. open tabs for each window
-    const usedGroupIds = {};
+      if (!allTabData.tabs || !Array.isArray(allTabData.tabs)) {
+        throw new Error(`Invalid file format: "tabs" array missing.`);
+      }
 
-    for (const [_, tabArray] of Object.entries(windowToTabs)) {
-      chrome.windows.create({}, async (newWindow) => {
-        // delete it in the end
-        const emptyDefaultTab = newWindow.tabs[0];
+      // separate tabs according to their window belongings
+      const windowToTabs = allTabData.tabs.reduce((acc, tab) => {
+        if (!Object.prototype.hasOwnProperty.call(acc, tab.windowId)) {
+          acc[tab.windowId] = [];
+        }
+        acc[tab.windowId].push(tab);
 
-        for (let i = 0; i < tabArray.length; ++i) {
-          const tab = tabArray[i];
+        return acc;
+      }, {});
 
-          const newTab = await chrome.tabs.create({
-            pinned: tab.pinned,
-            url: tab.url,
-            windowId: newWindow.id,
-          });
+      // 1. open tabs for each window
+      const usedGroupIds = {};
 
-          // 2. add the tab to a group
-          if (tab.groupId != -1) {
-            const tabGroupProps = {
-              tabIds: newTab.id,
-              ...(Object.prototype.hasOwnProperty.call(usedGroupIds, tab.groupId)
-                    ? { groupId : usedGroupIds[tab.groupId] }             // join an existing group
-                    : { createProperties : { windowId: newWindow.id } }), // a new group will be created
-            };
+      for (const [_, tabArray] of Object.entries(windowToTabs)) {
+        chrome.windows.create({}, async (newWindow) => {
+          // delete it in the end
+          const emptyDefaultTab = newWindow.tabs[0];
 
-            const newGroupId = await chrome.tabs.group(tabGroupProps);
-            
-            // 3. update group info (color, title, collapsed)
-            const groupInfo = allTabData.groups[tab.groupId];
-            chrome.tabGroups.update(newGroupId, groupInfo);
-            
-            usedGroupIds[tab.groupId] = newGroupId;
-          }
-        };
+          for (let i = 0; i < tabArray.length; ++i) {
+            const tab = tabArray[i];
 
-        chrome.tabs.remove(emptyDefaultTab.id);
-      });
+            const newTab = await chrome.tabs.create({
+              pinned: tab.pinned,
+              url: tab.url,
+              windowId: newWindow.id,
+            });
+
+            // 2. add the tab to a group
+            if (tab.groupId != -1) {
+              const tabGroupProps = {
+                tabIds: newTab.id,
+                ...(Object.prototype.hasOwnProperty.call(usedGroupIds, tab.groupId)
+                      ? { groupId : usedGroupIds[tab.groupId] }             // join an existing group
+                      : { createProperties : { windowId: newWindow.id } }), // a new group will be created
+              };
+
+              const newGroupId = await chrome.tabs.group(tabGroupProps);
+              
+              // 3. update group info (color, title, collapsed)
+              const groupInfo = allTabData.groups[tab.groupId];
+              chrome.tabGroups.update(newGroupId, groupInfo);
+              
+              usedGroupIds[tab.groupId] = newGroupId;
+            }
+          };
+
+          chrome.tabs.remove(emptyDefaultTab.id);
+        });
+      }
+    } catch (error) {
+      alert(`Error opening tabs: ${error.message}`);
     }
   };
 
-  reader.readAsText(file);
+  reader.onerror = () => {
+    console.error(`Error reading file: ${reader.error}`);
+  };
 
-  // TODO: reader.onerror
+  reader.readAsText(file);
 }
 
 document.getElementById('download_id').onclick = downloadTabData;
