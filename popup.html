@@ -1,21 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Save Open Tab URLs</title>
+    <title>Save Open Tabs</title>
     <link rel="stylesheet" href="popup.css">
   </head>
   <body>
-    <h1>Save and reopen tab URLs</h1>
+    <h1>Save and reopen tabs</h1>
+
+    <hr />
 
     <div class="line">
-      <label class="line__description" for="download_id">save into a local file:</label>
+      <label class="line__description" for="download_id">save as a .txt file</label>
       <div class="line__button">
         <input id="download_id" type="button" value="Download">
       </div>
     </div>
 
+    <div class="line line__settings">
+      <div class="line_description">
+        <label for="current_window_id">
+          current window
+        </label>
+        <span class="tooltip">
+          ?
+          <span class="tooltiptext">only tabs in the current browser window</span>
+        </span>
+      </div>
+
+      <div class="line__button">
+        <input id="current_window_id" type="checkbox" />
+      </div>
+    </div>
+
+    <hr />
+
     <div class="line">
-      <label class="line__description" for="file_button_id">open from a local file:</label>
+      <label class="line__description" for="file_button_id">open from a .txt file</label>
       <div class="line__button">
           <button id="file_button_id">Open tabs</button>
           <input id="open_tabs_id" type="file" style="display: none;">

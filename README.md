@@ -1,14 +1,14 @@
-# Save Open Tab URLs
+# Save Open Tabs
 *Google Chrome 89+*
 
 ## Why to use this extension
-Save open tab URLs into local `<file.txt>` and reopen them:
+Save open tabs into local `<file.txt>` and reopen them:
 - on another PC
 - on the same PC under another OS
 - when they've been lost
 
 #### Supports
-- multiple windows
+- current or multiple windows
 - tab groups
 - pinned tabs
 
@@ -24,8 +24,6 @@ Save open tab URLs into local `<file.txt>` and reopen them:
 
 ## Next plans:
 - on error, while reading a certain tab, continue reading others but show a warning for a user that he should do something about corrupted lines
-- optionally save incognito tabs
-- optionally save tabs only of the current window
 - show how many tab URLs will be saved and the titles
 - add optional encryption for downloaded URLs
 - save not into a local file but on the server
