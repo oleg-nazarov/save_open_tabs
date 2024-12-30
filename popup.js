@@ -33,8 +33,15 @@ async function getDataForSaving(tabs) {
 }
 
 async function downloadTabData() {
+  const onlyCurrentWindow = document.getElementById('current_window_id').checked;
+
   // prepare data
-  const tabs = await chrome.tabs.query({});
+  const queryOptions = {};
+  if (onlyCurrentWindow) {
+    queryOptions.currentWindow = true;
+  }
+
+  const tabs = await chrome.tabs.query(queryOptions);
   const allTabData = await getDataForSaving(tabs);
 
   // download data
@@ -45,8 +52,12 @@ async function downloadTabData() {
 }
 
 function openTabs() {
-  const file = document.getElementById('open_tabs_id').files[0];
+  const file = document.getElementById('open_tabs_id').files?.[0];
   const reader = new FileReader();
+
+  if (!file) {
+    throw new Error("Please select a file before clicking 'Open tabs'.");
+  }
 
   reader.onload = () => {
     try {
@@ -113,6 +124,9 @@ function openTabs() {
       }
     } catch (error) {
       alert(`Error opening tabs: ${error.message}`);
+    } finally {
+      // to be able to open the same file again
+      document.getElementById('open_tabs_id').value = '';
     }
   };
 

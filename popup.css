@@ -1,5 +1,5 @@
 body {
-    width: 250px;
+    width: 300px;
     margin-top: 7px;
     margin-bottom: 7px;
     margin-left: 10px;
@@ -7,19 +7,20 @@ body {
 
     color: #333333;
     font-family: Georgia, serif;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 h1 {
     text-align: center;
     color: #333333;
     font-family: 'Bitter', serif;
-    font-size: 23px;
+    font-size: 26px;
     font-weight: normal;
 }
 
 .line {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     margin-top: 10px;
     margin-bottom: 10px;
@@ -37,4 +38,49 @@ h1 {
 
 .line__button button, .line__button input {
     width: 90%;
+}
+
+.line__settings {
+    display: flex;
+    font-size: 14px;
+}
+
+.line__settings label {
+    font-style: italic;
+}
+
+.tooltip {
+    position: relative;
+    cursor: pointer;
+
+    background-color: #eee;
+    color: #555;
+    padding: 0.2rem 0.5rem;
+    border-radius: 50%;
+    font-weight: bold;
+    font-family: sans-serif;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+.tooltiptext {
+    position: absolute;
+    bottom: 130%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 1;
+
+    width: 200px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 12px;
 }
